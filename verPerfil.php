@@ -14,15 +14,19 @@ if (isset($_SESSION["user"])) {
         echo "Nivel: $level<br>";
         echo "Victorias: $wins<br><br>";
         echo "CARTAS DEL USUARIO:<br>";
-        echo'<table style="width:15%" border="1">';
-        echo "<tr><th>Carta</th><th>Nivel</th>";
+        echo'<table style="width:30%" border="1">';
+        echo "<tr><th>Carta</th><th>Nivel</th><th>Tipo</th><th>Rareza</th><th>Vida</th><th>Damage</th><th>Coste</th>";
         $select2 = selectFromDeck($user);
         while ($fila2 = mysqli_fetch_array($select2)) {
             extract($fila2);
-            echo "<tr><td>$card</td><td>$level</td>";
+            $userhp = $hitpoints+($level*2);
+            $userdamage = $damage+($level*2);
+            echo "<tr><td>$card</td><td>$level</td><td>$type</td><td>$rarity</td><td>$userhp</td><td>$userdamage</td><td>$cost</td>";
         }
         echo'</table>';
-
+        echo "<form action='home_user.php' method='post'>";
+        echo "<input type='submit' value='Volver'>";
+        echo "</form>";
     } else {
         echo "<p>No tienes permisos para ver esta página.</p>";
     }

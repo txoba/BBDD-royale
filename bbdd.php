@@ -28,24 +28,13 @@ function newUser($username, $password, $type, $wins, $level) {
     }
     desconectar($conexion);
 }
+
 function newCard($nombre, $tipo, $rareza, $vida, $danyo, $coste) {
     $conexion = conectar("royal");
     $insert = "insert into card values('$nombre', '$tipo', '$rareza', $vida, $danyo, $coste)";
     if (mysqli_query($conexion, $insert)) {
         echo "Carta dada de alta.<br>";
         header("refresh:2;url=home_admin.php");
-    } else {
-        echo mysqli_error($conexion);
-        header("refresh:3;url=home_admin.php");
-    }
-    desconectar($conexion);
-}
-function newDeckCard($usuario, $carta) {
-    $conexion = conectar("royal");
-    $insert = "insert into deck values('$usuario', '$carta',1)";
-    if (mysqli_query($conexion, $insert)) {
-        echo "Carta $carta dada al usuario $usuario.<br>";
-        header("refresh:3;url=home_admin.php");
     } else {
         echo mysqli_error($conexion);
         header("refresh:3;url=home_admin.php");
@@ -62,6 +51,7 @@ function selectUser() {
     desconectar($con);
     return $resultado;
 }
+
 function selectUserAll($user) {
     $con = conectar("royal");
     $query = "select * from user where username='$user';";
@@ -69,20 +59,41 @@ function selectUserAll($user) {
     desconectar($con);
     return $resultado;
 }
+
 function selectFromDeck($user) {
     $con = conectar("royal");
-    $query = "select * from deck where user='$user';";
+    $query = "select * from deck inner join card on deck.card=card.name where user='$user';";
     $resultado = mysqli_query($con, $query);
     desconectar($con);
     return $resultado;
 }
-function selectUserPassword($user,$pass) {
+
+function selectUserCard($user, $card) {
+    $con = conectar("royal");
+    $query = "select * from deck where user='$user' and card='$card';";
+    $resultado = mysqli_query($con, $query);
+    if (mysqli_fetch_array($resultado)) {
+        $update = "update deck set level=level+1 where user='$user' and card='$card'";
+        $resultado = mysqli_query($con, $update);
+        echo "Nivel de carta actualizado.";
+        header("refresh:1;url=home_admin.php");
+    } else {
+        $insert = "insert into deck values('$user', '$card',1)";
+        $resultado = mysqli_query($con, $insert);
+        echo "Carta dada de alta.";
+        header("refresh:1;url=home_admin.php");
+    }
+    desconectar($con);
+}
+
+function selectUserPassword($user, $pass) {
     $con = conectar("royal");
     $query = "select username,password from user where username='$user' and password='$pass' ;";
     $resultado = mysqli_query($con, $query);
     desconectar($con);
     return $resultado;
 }
+
 function selectCard() {
     $con = conectar("royal");
     $query = "select * from card;";
@@ -90,6 +101,7 @@ function selectCard() {
     desconectar($con);
     return $resultado;
 }
+
 function selectUserLevelWin() {
     $con = conectar("royal");
     $query = "select * from user order by level desc, wins desc;";
@@ -97,6 +109,7 @@ function selectUserLevelWin() {
     desconectar($con);
     return $resultado;
 }
+
 function comprobarUser($username) {
     $con = conectar("royal");
     $query = "select username from user where username='$username'";
@@ -107,6 +120,7 @@ function comprobarUser($username) {
         return false;
     }
 }
+
 function validarPassword($username) {
     $conexion = conectar("royal");
     $query = "select password from user where username='$username'";
@@ -114,6 +128,7 @@ function validarPassword($username) {
     desconectar($conexion);
     return $resultado;
 }
+
 function selectType($username) {
     $conexion = conectar("royal");
     $select = "select type from user where username='$username'";
@@ -126,8 +141,8 @@ function selectType($username) {
 
 // DELETE USER
 
-function deleteUser($name){
-    $con= conectar("royal");
+function deleteUser($name) {
+    $con = conectar("royal");
     $delete = "delete from user where username='$name'";
     if (mysqli_query($con, $delete)) {
         echo "Usuario eliminado!";
@@ -141,19 +156,7 @@ function deleteUser($name){
 
 //UPDATES
 
-function updateDeck($usuario, $carta) {
-    $con = conectar("royal");
-    $update = "update deck set level=level+1 where user='$usuario' and card='$carta'";
-    if (mysqli_query($con, $update)) {
-        echo "Nivel de carta actualizado.";
-        header("refresh:3;url=home_admin.php");
-    } else {
-        echo mysqli_error($con);
-        header("refresh:3;url=home_admin.php");
-    }
-    desconectar($con);
-}
-function updatePassword($password,$usuario) {
+function updatePassword($password, $usuario) {
     $con = conectar("royal");
     $update = "update user set password='$password' where username='$usuario'";
     if (mysqli_query($con, $update)) {
@@ -161,6 +164,7 @@ function updatePassword($password,$usuario) {
         header("refresh:3;url=home_user.php");
     } else {
         echo mysqli_error($con);
-    header("refresh:3;url=home_user.php");    }
+        header("refresh:3;url=home_user.php");
+    }
     desconectar($con);
 }

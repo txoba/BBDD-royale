@@ -3,11 +3,7 @@ require_once('bbdd.php');
 if (isset($_POST["enviar"])) {
     $usuario = $_POST["user"];
     $carta = $_POST["card"];
-    
-    //si x user te x carta
-    //updateDeck($usuario, $carta);
-    //si x user no te x carta
-    newDeckCard($usuario, $carta);
+    selectUserCard($usuario, $carta);
 } 
 
 else {
