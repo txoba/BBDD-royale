@@ -1,11 +1,9 @@
 <?php
 session_start();
-require_once 'bbdd_user.php';
-if (isset($_SESSION["username"])) {
-    // Nos aseguramos que el usuario sea administrador
-    // Cogemos el tipo de la variable de sesión
-    $tipo = $_SESSION["tipo"];
-    if ($tipo == 1) {
+require_once 'bbdd.php';
+if (isset($_SESSION["user"])) {
+    $tipo = $_SESSION["type"];
+    if ($tipo == 0) {
         ?>
         <html>
             <head>
@@ -13,9 +11,13 @@ if (isset($_SESSION["username"])) {
                 <title></title>
             </head>
             <body>
+                HOME USER: <?php echo $_SESSION["user"] ?><br>
                 <a href="verPerfil.php">Ver perfil</a><br>
                 <a href="modificarPassword.php">Modificar password</a><br>
-                <a href="batalla.php">Batalla</a><br>
+                <a href="batalla.php">Batalla</a><br><br>
+                <form action='logout.php' method='post'>
+                    <input type='submit' value='Cerrar Sesion'>
+                </form>
             </body>
         </html>
 <?php

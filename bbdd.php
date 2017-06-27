@@ -21,7 +21,7 @@ function newUser($username, $password, $type, $wins, $level) {
     $insert = "insert into user values('$username', '$password', $type, $wins, $level)";
     if (mysqli_query($conexion, $insert)) {
         echo "Usuario dado de alta.<br>";
-        header("refresh:3;url=index.php");
+        header("refresh:2;url=index.php");
     } else {
         echo mysqli_error($conexion);
         header("refresh:3;url=index.php");
@@ -33,7 +33,7 @@ function newCard($nombre, $tipo, $rareza, $vida, $danyo, $coste) {
     $insert = "insert into card values('$nombre', '$tipo', '$rareza', $vida, $danyo, $coste)";
     if (mysqli_query($conexion, $insert)) {
         echo "Carta dada de alta.<br>";
-        header("refresh:3;url=home_admin.php");
+        header("refresh:2;url=home_admin.php");
     } else {
         echo mysqli_error($conexion);
         header("refresh:3;url=home_admin.php");
@@ -62,6 +62,20 @@ function selectUser() {
     desconectar($con);
     return $resultado;
 }
+function selectUserAll($user) {
+    $con = conectar("royal");
+    $query = "select * from user where username='$user';";
+    $resultado = mysqli_query($con, $query);
+    desconectar($con);
+    return $resultado;
+}
+function selectFromDeck($user) {
+    $con = conectar("royal");
+    $query = "select * from deck where user='$user';";
+    $resultado = mysqli_query($con, $query);
+    desconectar($con);
+    return $resultado;
+}
 function selectUserPassword($user,$pass) {
     $con = conectar("royal");
     $query = "select username,password from user where username='$user' and password='$pass' ;";
@@ -82,6 +96,32 @@ function selectUserLevelWin() {
     $resultado = mysqli_query($con, $query);
     desconectar($con);
     return $resultado;
+}
+function comprobarUser($username) {
+    $con = conectar("royal");
+    $query = "select username from user where username='$username'";
+    $resultado = mysqli_query($con, $query);
+    desconectar($con);
+    $num_rows = mysqli_num_rows($resultado);
+    if ($num_rows == 0) {
+        return false;
+    }
+}
+function validarPassword($username) {
+    $conexion = conectar("royal");
+    $query = "select password from user where username='$username'";
+    $resultado = mysqli_query($conexion, $query);
+    desconectar($conexion);
+    return $resultado;
+}
+function selectType($username) {
+    $conexion = conectar("royal");
+    $select = "select type from user where username='$username'";
+    $resultado = mysqli_query($conexion, $select);
+    $fila = mysqli_fetch_array($resultado);
+    extract($fila);
+    desconectar($conexion);
+    return $type;
 }
 
 // DELETE USER
@@ -117,10 +157,10 @@ function updatePassword($password,$usuario) {
     $con = conectar("royal");
     $update = "update user set password='$password' where username='$usuario'";
     if (mysqli_query($con, $update)) {
-        echo "Nivel de carta actualizado.";
-        header("refresh:3;url=home_admin.php");
+        echo "Password actualizada.";
+        header("refresh:3;url=home_user.php");
     } else {
         echo mysqli_error($con);
-    header("refresh:3;url=home_admin.php");    }
+    header("refresh:3;url=home_user.php");    }
     desconectar($con);
 }
